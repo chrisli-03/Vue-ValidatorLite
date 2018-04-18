@@ -5,7 +5,9 @@ const validations = {
 	'minCharacter': minCharacter,
 	'complicateEasy': complicateEasy,
 	'complicateNormal': complicateNormal,
-	'complicateHard': complicateHard
+	'complicateHard': complicateHard,
+	'match': match,
+	'email': email
 }
 
 // Collection of error messages
@@ -15,7 +17,9 @@ const errorMessages = {
 	'minCharacter': '+不能短于<',
 	'complicateEasy': '+必须包含数字和字母,无空白',
 	'complicateNormal': '+必须包含数字,小写字母,大写字母,无空白',
-	'complicateHard': '+必须包含数字,小写字母,大写字母,特殊符号,无空白'
+	'complicateHard': '+必须包含数字,小写字母,大写字母,特殊符号,无空白',
+	'match': '必须与=一样',
+	'email': '不符合邮箱格式'
 }
 
 // Constant variables
@@ -24,6 +28,7 @@ const defaultMinCharacter = '5'
 const complicateEasyRegEx = '^(?=.*[a-zA-Z])(?=.*[0-9])\\S{0,}$'
 const complicateNormalRegEx = '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])\\S{0,}$'
 const complicateHardRegEx = '^(?=.*[^a-zA-Z0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])\\S{0,}$'
+const emailRegEx = '^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$'
 
 // Collection of all error message tags
 const errorTags = {}
@@ -46,21 +51,32 @@ function minCharacter(str, attribute) {
 }
 
 function complicateEasy(str, attribute) {
-	return matchReg(str, complicateEasyRegEx)
+	return matchRegEx(str, complicateEasyRegEx)
 }
 
 function complicateNormal(str, attribute) {
-	return matchReg(str, complicateNormalRegEx)
+	return matchRegEx(str, complicateNormalRegEx)
 }
 
 function complicateHard(str, attribute) {
-	return matchReg(str, complicateHardRegEx)
+	return matchRegEx(str, complicateHardRegEx)
+}
+
+function match(str, attribute) {
+	var target = document.getElementById(attribute)
+	if (target) {
+		return str.localeCompare(target.value) === 0
+	}
+	return false
+}
+
+function email(str, attribute) {
+	return matchRegEx(str, emailRegEx)
 }
 
 // Regex match
-function matchReg(str, regExStr) {
+function matchRegEx(str, regExStr) {
 	var regEx = new RegExp(regExStr)
-	console.log(str.search(regEx) === 0)
 	return str.search(regEx) === 0
 }
 
@@ -98,6 +114,7 @@ ValidatorLite.install = function(Vue, options) {
 						errorTags[binding.arg].innerHTML = errorMessages[keys[key]].replace('+', field || '')
 																					.replace('>', attribute || defaultMaxCharacter)
 																					.replace('<', attribute || defaultMinCharacter)
+																					.replace('=', (document.getElementById(attribute) ? document.getElementById(attribute).placeholder : ''))
 						return false
 					} else {
 						errorTags[binding.arg].innerHTML = ''
@@ -115,8 +132,20 @@ ValidatorLite.install = function(Vue, options) {
 	Vue.directive('validate-all', {
 		bind(el, binding, vnode, oldVnode) {
 			el.onclick = function() {
-				if (document.getElementById('login_user').onblur()) {
-					vnode.context.submitLoginForm()
+				let submitFlag = true
+				let keys = binding.value
+				for (let id in keys) {
+					if (id === keys.length - 1) {
+						continue
+					}
+					let input = document.getElementById(keys[id])
+					if (input && !input.onblur()) {
+						submitFlag = false
+					}
+				}
+				if (submitFlag) {
+					let foo = keys[keys.length - 1]
+					foo()
 				}
 			}
 		}
@@ -124,4 +153,3 @@ ValidatorLite.install = function(Vue, options) {
 }
 
 export default ValidatorLite
-

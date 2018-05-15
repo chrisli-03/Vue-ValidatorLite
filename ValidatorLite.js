@@ -12,14 +12,14 @@ const validations = {
 
 // Collection of error messages
 const errorMessages = {
-	'nonEmpty': '+不能为空',
-	'maxCharacter': '+不能长于>',
-	'minCharacter': '+不能短于<',
-	'complicateEasy': '+必须包含数字和字母,无空白',
-	'complicateNormal': '+必须包含数字,小写字母,大写字母,无空白',
-	'complicateHard': '+必须包含数字,小写字母,大写字母,特殊符号,无空白',
-	'match': '必须与=一样',
-	'email': '不符合邮箱格式'
+	'nonEmpty': '+ cannot be empty',
+	'maxCharacter': '+ cannot be longer than > characters',
+	'minCharacter': '+ cannot be shorter than < characters',
+	'complicateEasy': '+ must contain 1 or more number and alphabet, no whitespace',
+	'complicateNormal': '+ must contain 1 or more number, uppercase and lowercase alphabet, no whitespace',
+	'complicateHard': '+ must contain 1 ore more number, uppercase, lowercase and special character',
+	'match': 'does not match =',
+	'email': 'invalid email'
 }
 
 // Constant variables
